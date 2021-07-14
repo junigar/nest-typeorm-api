@@ -1,6 +1,6 @@
 import { NivelPrioridad } from "src/enums/prioridad.enum";
 import { Status } from "src/enums/status.enum";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Task{
@@ -21,4 +21,11 @@ export class Task{
 
     @Column()
     status: Status;
+    
+    @ManyToOne(()=> Task, task => task.subTareas, {nullable: true, onDelete: 'CASCADE'})
+    tareaDeRequisito: Task;
+
+    @OneToMany(()=> Task, task => task.tareaDeRequisito)
+    subTareas: Task[];
+
 }

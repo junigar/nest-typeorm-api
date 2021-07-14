@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsDate, IsEnum, IsOptional, IsString, Length } from "class-validator";
+import { IsEnum, IsOptional, IsString, Length } from "class-validator";
 import { NivelPrioridad } from "src/enums/prioridad.enum";
 import { Status } from "src/enums/status.enum";
 
@@ -22,4 +22,7 @@ export class TaskDto {
 
     @IsEnum(Status)
     status: Status;
+
+    @IsOptional()
+    tareaDeRequisitoId: number;
 }

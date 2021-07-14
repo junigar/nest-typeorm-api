@@ -1,3 +1,4 @@
+import { ConflictException } from '@nestjs/common';
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TaskDto } from './task.dto';
@@ -29,6 +30,8 @@ export class TaskController {
 
   @Put(':id')
   async editOne(@Param('id') id: number, @Body() dto: TaskDto) {
+    if(dto.tareaDeRequisitoId === id)
+    throw new ConflictException('Una tarea no se puede depender de si misma.');
     const data = await this.service.editOne(id, dto);
     return data;
   }
