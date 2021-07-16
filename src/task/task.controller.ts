@@ -16,6 +16,34 @@ export class TaskController {
     return { data };
   }
 
+  @Get('tree')
+  async getTaskTreeView() {
+    const iterarArreglo = (arreglo) => {
+      let auxiliar = [...arreglo]
+      auxiliar.forEach((item, index) => {
+        if(item['subTareas'] != null)
+          iterarArreglo(item['subTareas'])
+        
+        for(let key in item){
+          if(key == 'subTareas'){
+            item['children'] = item['subTareas'];
+            delete item['subTareas'];
+            continue;
+          }
+          item['data'] = {...item['data'], [key]: item[key]}
+          delete item[key];
+        }
+      })
+      return auxiliar;
+    }
+
+    
+    let response = await this.service.getTaskTreeView();
+    let data = [...response];
+    data = iterarArreglo(data);
+
+    return data; 
+  }
   @Get(':id')
   async getById(@Param('id', ParseIntPipe) id: number) {
     const data = await this.service.getById(id);

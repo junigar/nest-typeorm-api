@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository, TreeRepository } from 'typeorm';
 import { TaskDto } from './task.dto';
 import { Task } from './task.entity';
 
@@ -8,11 +8,16 @@ import { Task } from './task.entity';
 export class TaskService {
     constructor(
         @InjectRepository(Task)
-        private readonly repository: Repository<Task>,
+        private readonly repository: TreeRepository<Task>,
       ) {}
     
       async getAll() {
-        return await this.repository.find({relations: ['tareaDeRequisito', 'subTareas']});
+        return this.repository.find({relations: ['tareaDeRequisito', 'subTareas']});
+      }
+
+      async getTaskTreeView() {
+        let response = this.repository.findTrees();
+        return response;
       }
     
       async getById(id: number) {
@@ -22,7 +27,7 @@ export class TaskService {
       }
     
       async createOne(dto: TaskDto) {
-        let tareaDeRequisito;
+        let tareaDeRequisito: Task;
         const task = this.repository.create(dto);
         if(dto.tareaDeRequisitoId){
           tareaDeRequisito = await this.repository.findOne(dto.tareaDeRequisitoId);
@@ -32,7 +37,7 @@ export class TaskService {
       }
     
       async editOne(id: number, dto: TaskDto) {
-        let tareaDeRequisito;
+        let tareaDeRequisito: Task;
         const task = await this.repository.findOne(id);
         if (!task) throw new NotFoundException('Task does not exist');
         
