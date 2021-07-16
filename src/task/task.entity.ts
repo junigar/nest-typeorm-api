@@ -22,6 +22,11 @@ export class Task{
 
     @Column()
     status: Status;
+
+    @Column({
+        nullable: true
+    })
+    tareaDeRequisitoId: number;
     
     @TreeParent()
     tareaDeRequisito: Task;

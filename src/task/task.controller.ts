@@ -18,26 +18,6 @@ export class TaskController {
 
   @Get('tree')
   async getTaskTreeView() {
-    const iterarArreglo = (arreglo) => {
-      let auxiliar = [...arreglo]
-      auxiliar.forEach((item, index) => {
-        if(item['subTareas'] != null)
-          iterarArreglo(item['subTareas'])
-        
-        for(let key in item){
-          if(key == 'subTareas'){
-            item['children'] = item['subTareas'];
-            delete item['subTareas'];
-            continue;
-          }
-          item['data'] = {...item['data'], [key]: item[key]}
-          delete item[key];
-        }
-      })
-      return auxiliar;
-    }
-
-    
     let response = await this.service.getTaskTreeView();
     let data = [...response];
     data = iterarArreglo(data);
@@ -60,8 +40,9 @@ export class TaskController {
   async editOne(@Param('id') id: number, @Body() dto: TaskDto) {
     if(dto.tareaDeRequisitoId === id)
     throw new ConflictException('Una tarea no se puede depender de si misma.');
-    const data = await this.service.editOne(id, dto);
-    return data;
+    let data = await this.service.editOne(id, dto);
+    let aux = iterarArreglo([data])
+    return aux[0];
   }
 
   @Delete(':id')
@@ -70,4 +51,27 @@ export class TaskController {
     return data;
   }
 
+}
+
+function iterarArreglo(arreglo) {
+  const expectedKeys = ['id', 'titulo', 'fechaCreacion', 'descripcion', 'nivelPrioridad', 'status', 'tareaDeRequisitoId'];
+  let auxiliar = [...arreglo]
+  auxiliar.forEach((item) => {
+    if(item['subTareas'] != null)
+      iterarArreglo(item['subTareas'])
+
+    for(let key in item){
+      if(key == 'subTareas'){
+        item['children'] = item['subTareas'];
+        delete item['subTareas'];
+        continue;
+      }
+      if(!expectedKeys.includes(key)) delete item[key];
+      else{
+        item['data'] = {...item['data'], [key]: item[key]}
+        delete item[key];
+      }
+    }
+  })
+  return auxiliar;
 }

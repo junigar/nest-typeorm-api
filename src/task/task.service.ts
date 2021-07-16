@@ -48,8 +48,11 @@ export class TaskService {
           task.tareaDeRequisito = null;
         }
     
-        const editedTask = Object.assign(task, dto);
-        return await this.repository.save(editedTask);
+        let editedTask = Object.assign(task, dto);
+        editedTask = await this.repository.save(editedTask);
+
+        
+        return this.repository.findDescendantsTree(editedTask);
       }
     
       async deleteOne(id: number) {
