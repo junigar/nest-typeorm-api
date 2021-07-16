@@ -44,6 +44,8 @@ export class TaskService {
         if(dto.tareaDeRequisitoId){
           tareaDeRequisito = await this.repository.findOne(dto.tareaDeRequisitoId);
           task.tareaDeRequisito = tareaDeRequisito;
+        }else{
+          task.tareaDeRequisito = null;
         }
     
         const editedTask = Object.assign(task, dto);
