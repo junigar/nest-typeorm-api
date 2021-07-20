@@ -33,7 +33,7 @@ export class TaskController {
   @Post()
   async createPost(@Body() dto: TaskDto) {
     const data = await this.service.createOne(dto);
-    return data;
+    return iterarArreglo([data]);
   }
 
   @Put(':id')
@@ -72,6 +72,7 @@ function iterarArreglo(arreglo) {
         delete item[key];
       }
     }
+  if(!item["children"]) item["children"]=[];
   })
   return auxiliar;
 }

@@ -28,10 +28,10 @@ export class Task{
     })
     tareaDeRequisitoId: number;
     
-    @TreeParent()
+    @TreeParent({onDelete: 'CASCADE'})
     tareaDeRequisito: Task;
 
-    @TreeChildren()
+    @TreeChildren({cascade: true})
     subTareas: Task[];
 
 }
